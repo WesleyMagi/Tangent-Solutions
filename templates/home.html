@@ -5,8 +5,8 @@
   <meta charset="utf-8">
   <meta name="robots" content="index, follow">
   <meta http-equiv="x-ua-compatible" content="ie=edge">
-  <meta name="author" content="https://github.com/spapas/">
-  <title>Home</title>
+  <meta name="author" content="https://github.com/WesleyMagi/Tangent-solutions">
+  <title>Tangent Solutions Home</title>
   <link rel="stylesheet" href='{% static "spectre.min.css" %}'>
   <link rel="stylesheet" href='{% static "spectre-icons.min.css" %}'>
   <link rel="icon" href="{% static 'favicon.ico' %}">
@@ -15,10 +15,10 @@
 </head>
 <body>
     <div class="container grid-lg">
-        <h2>Test</h2>
+        <h2>Tangent Solutions</h2>
         <div class="columns" id="non-logged-in">
             <div class='column col-3'>
-                You have to log-in!
+             Please log in.   
             </div>
             <div class='column col-3'>
                 <button class="btn btn-primary"  id='loginButton'>Login</button>
@@ -35,10 +35,34 @@
         <hr />
         <div class="columns" id="test">
             <div class='column col-3'>
-                <button class="btn btn-primary"  id='testAuthButton'>Test auth</button>
+                <button class="btn btn-primary"  id='testAuthButton'>Who am I?</button>
             </div>
             <div class='column col-9'>
                 <div id='test-auth-response' ></div>
+            </div>
+        </div>
+        <div class="columns" id="employees">
+            <div class='column col-3'>
+                <button class="btn btn-primary"  id='employees'>Employees</button>
+            </div>
+            <div class='column col-9'>
+                <div id='search' ></div>
+            </div>
+        </div>
+        <div class="columns" id="test">
+            <div class='column col-3'>
+                <button class="btn btn-primary"  id='search'>Find a friend</button>
+            </div>
+            <div class='column col-9'>
+                <div id='search' ></div>
+            </div>
+        </div>
+        <div class="columns" id="test">
+            <div class='column col-3'>
+                <button class="btn btn-primary"  id='stats'>Company Stats</button>
+            </div>
+            <div class='column col-9'>
+                <div id='stats' ></div>
             </div>
         </div>
     </div>
@@ -83,6 +107,143 @@
     
     <script src='{% static "jquery-3.3.1.min.js" %}' ></script>
     <script>
+    
+        var rest_urls = {
+            'login': '{% url "rest_login" %}',
+            'logout': '{% url "rest_logout" %}',
+            'who_am_i': '{% url "who_am_i" %}',
+        };
+        
+        var g_auth = localStorage.getItem("auth");
+        if(g_auth == null) {
+            g_auth = sessionStorage.getItem("auth");
+        }
+        
+        if(g_auth) {
+            try {
+                g_auth = JSON.parse(g_auth);
+            } catch(error) {
+                g_auth = null; 
+            }
+        }
+        var getCookie = function(name) {
+            var cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                var cookies = document.cookie.split(';');
+                for (var i = 0; i < cookies.length; i++) {
+                    var cookie = jQuery.trim(cookies[i]);
+                    // Does this cookie string begin with the name we want?
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        };
+        var g_csrftoken = getCookie('csrftoken');
+        
+        
+        var initLogin = function() {
+            if(g_auth) {
+                $('#non-logged-in').hide();
+                $('#logged-in').show();
+                $('#span-username').html(g_auth.username);
+                if(g_auth.remember_me) {
+                    localStorage.setItem("auth", JSON.stringify(g_auth));
+                } else {
+                    sessionStorage.setItem("auth", JSON.stringify(g_auth));
+                }
+            } else {
+                $('#non-logged-in').show();
+                $('#logged-in').hide();
+                $('#span-username').html('');
+                localStorage.removeItem("auth");
+                sessionStorage.removeItem("auth");
+            }
+            $('#test-auth-response').html("");
+        };
+        $(function () {
+            initLogin(); 
+            $('#loginButton').click(function() {
+                $('#login-modal').addClass('active');
+            });
+            
+            $('.close-modal').click(function() {
+                $('#login-modal').removeClass('active');
+            });
+            
+            $('#testAuthButton').click(function() {
+                $.ajax({
+                    url: rest_urls.who_am_i, 
+                    method: "GET", 
+                    beforeSend: function(request) {
+                        if(g_auth) {
+                            request.setRequestHeader("Authorization", "Token " + g_auth.key);
+                        }
+                    }
+                }).done(function(data) {
+                    $('#test-auth-response').html("<span class='label label-success'>Ok! Response: " + data);
+                }).fail(function(data) {
+                    $('#test-auth-response').html("<span class='label label-error'>We don't know who you are! Please log in first. Response: " + data.responseText + " (status: " + data.status+")</span>");
+                });
+            });
+            
+            $('#loginOkButton').click(function() {
+                var username = $('#input-username').val();
+                var password = $('#input-password').val();
+                var remember_me = $('#input-local-storage').prop('checked');
+                if(username && password) {
+                    console.log("Attempting to login with ", username, password);
+                    $('#modal-error').addClass('d-invisible');
+                    $.ajax({
+                        url: rest_urls.login, 
+                        method: "POST", 
+                        data: {
+                            username: username,
+                            password: password,
+                            csrfmiddlewaretoken: g_csrftoken,
+                        }
+                    }).done(function(data) {
+                        console.log("DONE: ", username, data.key);
+                        g_auth = {
+                            username: username,
+                            key: data.key,
+                            remember_me: remember_me
+                        };
+                        $('#login-modal').removeClass('active');
+                        initLogin();
+                        // CAREFUL! csrf token is rotated after login: https://docs.djangoproject.com/en/1.7/releases/1.5.2/#bugfixes
+                        g_csrftoken = getCookie('csrftoken');
+                    }).fail(function(data) {
+                        console.log("FAIL", data);
+                        $('#modal-error').removeClass('d-invisible');
+                    });
+                } else {
+                    $('#modal-error').removeClass('d-invisible');
+                }
+            });
+            $('#logoutButton').click(function() {
+                console.log("Attempting to logout");
+                $.ajax({
+                    url: rest_urls.logout, 
+                    method: "POST", 
+                    beforeSend: function(request) {
+                        request.setRequestHeader("Authorization", "Token " + g_auth.key);
+                    },
+                    data: {
+                        csrfmiddlewaretoken: g_csrftoken
+                    }
+                }).done(function(data) {
+                    console.log("DONE: ", data);
+                    g_auth = null;
+                    initLogin();
+                }).fail(function(data) {
+                    console.log("FAIL: ", data);
+                });
+            });
+            
+        });
         
     </script>
   
