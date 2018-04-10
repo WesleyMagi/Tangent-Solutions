@@ -1,0 +1,91 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="robots" content="index, follow">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="author" content="https://github.com/spapas/">
+  <title>Home</title>
+  <link rel="stylesheet" href='{% static "spectre.min.css" %}'>
+  <link rel="stylesheet" href='{% static "spectre-icons.min.css" %}'>
+  <link rel="icon" href="{% static 'favicon.ico' %}">
+  <style>
+  </style>
+</head>
+<body>
+    <div class="container grid-lg">
+        <h2>Test</h2>
+        <div class="columns" id="non-logged-in">
+            <div class='column col-3'>
+                You have to log-in!
+            </div>
+            <div class='column col-3'>
+                <button class="btn btn-primary"  id='loginButton'>Login</button>
+            </div>
+        </div>
+        <div class="columns" id="logged-in">
+            <div class='column col-3'>
+                Welcome <span id='span-username'></span>!
+            </div>
+            <div class='column col-3'>
+                <button class="btn btn-primary"  id='logoutButton'>Logout</button>
+            </div>
+        </div>
+        <hr />
+        <div class="columns" id="test">
+            <div class='column col-3'>
+                <button class="btn btn-primary"  id='testAuthButton'>Test auth</button>
+            </div>
+            <div class='column col-9'>
+                <div id='test-auth-response' ></div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="modal" id="login-modal">
+        <a href="#close" class="modal-overlay close-modal" aria-label="Close"></a>
+        <div class="modal-container">
+            <div class="modal-header">
+                <a href="#close" class="btn btn-clear float-right close-modal" aria-label="Close"></a>
+                <div class="modal-title h5">Please login</div>
+            </div>
+            <div class="modal-body">
+                <div class="content">
+                    <form>
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <label class="form-label" for="input-username">Username</label>
+                            <input class="form-input" type="text" id="input-username" placeholder="Name">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="input-password">Password</label>
+                            <input class="form-input" type="password" id="input-password" placeholder="Password">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-checkbox" for="input-local-storage">
+                                <input type="checkbox" id="input-local-storage" /> <i class="form-icon"></i>  Use local storage (remember me)
+                            </label>
+                        </div>
+                    </form>
+                    <div class='label label-error mt-1 d-invisible' id='modal-error'>
+                        Unable to login!
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                
+                <button class="btn btn-primary" id='loginOkButton' >Ok</button>
+                <a href="#close" class="btn close-modal" >Close</a>
+            </div>
+        </div>
+    </div>    
+    
+    <script src='{% static "jquery-3.3.1.min.js" %}' ></script>
+    <script>
+        
+    </script>
+  
+</body>
+
+</html>
