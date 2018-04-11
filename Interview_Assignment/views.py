@@ -10,6 +10,7 @@ from rest_auth.views import LogoutView
 import json
 import sys
 import requests
+from datetime import datetime
 
 class HomeTemplateView(TemplateView):
     template_name = 'home.html'
@@ -70,7 +71,83 @@ class CompanyStatsView(APIView):
      token = request.META.get('HTTP_AUTHORIZATION')
      url = 'http://staging.tangent.tngnt.co/api/employee/'
      r = requests.get(url,  headers={'Authorization': 'Token {}'.format(token)})
-
+     
+     employeeData = r.json()
+          
+     birthdaysThisMonth = self.birthday(employeeData)
+     positionData = self.position(employeeData)
+     companyDemographicData =  self.demographics(employeeData)
+     numberOfEmployees = self.numberEmployees(companyDemographicData) 
      #print(r.json(), file=sys.stderr)     
-     return Response(r.json())
+     
+     stats = {"numberOfEemployees":numberOfEmployees,
+              "birthdayThisMonth": birthdaysThisMonth,
+              "positionData":positionData,
+              "companyDemographicData":companyDemographicData,              
+             }
+     
+     return Response(stats)
+
+#data retrieval functions below
+     
+    def numberEmployees(self, companyDemographicData):
+     sum_of = sum(companyDemographicData.values())
+     return sum_of
+ 
+    def birthday(self, employeeData):
+     birthdayNames = []
+     currentMonth = datetime.now().month
+     
+     for key in employeeData:
+      birthMonth = int(key['birth_date'][5])*10 + int(key['birth_date'][6])
+      if birthMonth == currentMonth:
+       birthdayNames.append(key['user']['first_name'] +' '+ key['user']['last_name'])
+    
+     if not birthdayNames:
+      birthdayNames.append('No birthdays this month: Happy NOT birthday to everyone!')
+      #birthdayNames = {"Happy":"Not Birthday"}
+     return birthdayNames
+ 
+    
+    def position(self, employeeData):
+     uniqueList = []
+     howMany = []
+     for key in employeeData:
+      if key['position']['name'] not in uniqueList:
+       uniqueList.append(key['position']['name'])
+  
+     howMany = [0] * len(uniqueList)
+     for x in range (0, len(uniqueList)):
+      for key in employeeData:
+       if uniqueList[x] == key['position']['name']:
+        howMany[x] = howMany[x] + 1
+  
+     positionDict = {}  
+  
+     for x in range (0, len(uniqueList)):
+      positionDict[uniqueList[x]] = howMany[x]
+  
+     return positionDict  
+ 
+    
+    
+    def demographics(self, employeeData):
+     races = [0, 0, 0, 0, 0] #black, coloured, indian, white, non-dominant
+     raceChars = ['B','C','I','W','N']
+     for key in employeeData:
+      if key['race'] == 'B':
+       races[0] = races[0] + 1
+      elif key['race'] == 'C':
+       races[1] = races[1] + 1
+      elif key['race'] == 'I':
+       races[2] = races[2] + 1
+      elif key['race'] == 'W':
+       races[3] = races[3] + 1
+      elif key['race'] == 'N':
+       races[4] = races[4] + 1
+  
+     raceDict = {}
+     for x in range (0, len(races)):
+      raceDict[raceChars[x]] = races[x]
+     return raceDict
  
