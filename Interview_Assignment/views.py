@@ -54,3 +54,23 @@ class EmployeeView(APIView):
      #print(r.json(), file=sys.stderr)
      
      return Response(r.json())
+ 
+class FindAFriendView(APIView):
+    def get(self, request, format=None):
+     token = request.META.get('HTTP_AUTHORIZATION')
+     url = 'http://staging.tangent.tngnt.co/api/employee/'
+     r = requests.get(url,  headers={'Authorization': 'Token {}'.format(token)})
+     
+     #print(r.json(), file=sys.stderr)
+     
+     return Response(r.json())
+
+class CompanyStatsView(APIView):
+    def get(self, request, format=None):
+     token = request.META.get('HTTP_AUTHORIZATION')
+     url = 'http://staging.tangent.tngnt.co/api/employee/'
+     r = requests.get(url,  headers={'Authorization': 'Token {}'.format(token)})
+
+     #print(r.json(), file=sys.stderr)     
+     return Response(r.json())
+ 

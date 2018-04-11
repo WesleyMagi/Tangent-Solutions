@@ -111,7 +111,9 @@
         var rest_urls = {
             'login': '{% url "rest_login" %}',
             'who_am_i': '{% url "who_am_i" %}',
-            'employee': '{% url "employee"%}'
+            'employee': '{% url "employee"%}',
+            'find_a_friend': '{% url "find_a_friend"%}',
+            'company_stats': '{% url "company_stats"%}',
         };
 
         var g_auth = localStorage.getItem("auth");
@@ -232,6 +234,38 @@
             $('#employees').click(function() {
                 $.ajax({
                     url: rest_urls.employee,
+                    method: "GET",
+                    beforeSend: function(request) {
+                        if(g_auth) {
+                            request.setRequestHeader("Authorization", g_auth.key);
+                        }
+                    }
+                }).done(function(data) {
+                    $('#test-auth-response').html("<span class='label label-success'>" + JSON.stringify(data));
+                }).fail(function(data) {
+                    $('#test-auth-response').html("<span class='label label-error'>We don't know who you are! Please log in first. Response: " + data.responseText + " (status: " + data.status+")</span>");
+                });
+            });
+            
+            $('#search').click(function() {
+                $.ajax({
+                    url: rest_urls.find_a_friend,
+                    method: "GET",
+                    beforeSend: function(request) {
+                        if(g_auth) {
+                            request.setRequestHeader("Authorization", g_auth.key);
+                        }
+                    }
+                }).done(function(data) {
+                    $('#test-auth-response').html("<span class='label label-success'>" + JSON.stringify(data));
+                }).fail(function(data) {
+                    $('#test-auth-response').html("<span class='label label-error'>We don't know who you are! Please log in first. Response: " + data.responseText + " (status: " + data.status+")</span>");
+                });
+            });
+            
+            $('#stats').click(function() {
+                $.ajax({
+                    url: rest_urls.company_stats,
                     method: "GET",
                     beforeSend: function(request) {
                         if(g_auth) {

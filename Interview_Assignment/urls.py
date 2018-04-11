@@ -18,7 +18,7 @@ from django.conf.urls import include
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import path
-from .views import HomeTemplateView, LoginView, WhoAmI, LogoutViewEx, EmployeeView
+from .views import HomeTemplateView, LoginView, WhoAmI, LogoutViewEx, EmployeeView,FindAFriendView,CompanyStatsView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -26,5 +26,7 @@ urlpatterns = [
     path('rest-auth/logout/', LogoutViewEx.as_view(), name='rest_logout', ),
     path('rest-auth/login/', LoginView.as_view(), name='rest_login', ),
     path('employee/', EmployeeView.as_view(),name='employee',),
+    path('find_a_friend/', FindAFriendView.as_view(),name='find_a_friend'),
+    path('company_stats',CompanyStatsView.as_view(),name='company_stats'),
     path('', HomeTemplateView.as_view(), name='home', ),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
