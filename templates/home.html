@@ -107,7 +107,7 @@
 
     <script src='{% static "jquery-3.3.1.min.js" %}' ></script>
     <script>
-
+        var username = "null";
         var rest_urls = {
             'login': '{% url "rest_login" %}',
             'who_am_i': '{% url "who_am_i" %}',
@@ -176,20 +176,23 @@
                 $.ajax({
                     url: rest_urls.who_am_i,
                     method: "GET",
+                    token: g_auth.key,
                     beforeSend: function(request) {
                         if(g_auth) {
+                        console.log(g_auth.key);
                             request.setRequestHeader("Authorization", "Token " + g_auth.key);
-                        }
+                            
+                        }                    
                     }
                 }).done(function(data) {
                     $('#test-auth-response').html("<span class='label label-success'>Ok! Response: " + data);
                 }).fail(function(data) {
-                    $('#test-auth-response').html("<span class='label label-error'>We don't know who you are! Please log in first. Response: " + data.responseText + " (status: " + data.status+data+")</span>");
+                    $('#test-auth-response').html("<span class='label label-error'>We don't know who you are! Please log in first. Response: " + data.responseText + " (status: " + data.status+")</span>");
                 });
             });
-
+    
             $('#loginOkButton').click(function() {
-                var username = $('#input-username').val();
+                username = $('#input-username').val();
                 var password = $('#input-password').val();
                 var remember_me = $('#input-local-storage').prop('checked');
                 if(username && password) {
@@ -208,7 +211,8 @@
                         g_auth = {
                             username: data.username,
                             key: data['token'],
-                            remember_me: remember_me
+                            remember_me: remember_me,
+                            csrfmiddlewaretoken: g_csrftoken,
                         };
                         $('#login-modal').removeClass('active');
                         initLogin();
@@ -228,7 +232,7 @@
                     url: rest_urls.logout,
                     method: "GET",
                     beforeSend: function(request) {
-                        request.setRequestHeader("Authorization", "Token " + g_auth.key);
+                        request.setRequestHeader("Authorization", "Token" + g_auth.key);
                     },
                     data: {
                         csrfmiddlewaretoken: g_csrftoken
