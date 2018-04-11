@@ -18,14 +18,11 @@ from django.conf.urls import include
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import path
-from .views import HomeTemplateView, LoginView, WhoAmI, LogoutViewEx
-from rest_auth.views import LoginView
+from .views import HomeTemplateView, LoginView, WhoAmI
 
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
     path('who_am_i/', WhoAmI.as_view(), name='who_am_i', ),
-    path('rest-auth/logout/', LogoutViewEx.as_view(), name='rest_logout', ),
     path('rest-auth/login/', LoginView.as_view(), name='rest_login', ),
     path('', HomeTemplateView.as_view(), name='home', ),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
