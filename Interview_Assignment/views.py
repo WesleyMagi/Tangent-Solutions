@@ -24,7 +24,7 @@ class LoginView(APIView):
         r = requests.post(url, payload)
         token = r.json()
 
-        print("Hello World", file=sys.stderr)
+        #print("Hello World", file=sys.stderr)
 
         #url = 'http://staging.tangent.tngnt.co/api/employee/me/'
         #r = requests.get(url,  headers={'Authorization': 'Token {}'.format(token['token'])})
@@ -59,10 +59,15 @@ class EmployeeView(APIView):
 class FindAFriendView(APIView):
     def get(self, request, format=None):
      token = request.META.get('HTTP_AUTHORIZATION')
-     url = 'http://staging.tangent.tngnt.co/api/employee/'
+     string = request.META.get('QUERY_STRING')
+     url = 'http://staging.tangent.tngnt.co/api/employee/?'+string
      r = requests.get(url,  headers={'Authorization': 'Token {}'.format(token)})
      
-     #print(r.json(), file=sys.stderr)
+     #for key in request.data
+     
+     
+     
+     print(url, file=sys.stderr)
      
      return Response(r.json())
 
@@ -80,10 +85,10 @@ class CompanyStatsView(APIView):
      numberOfEmployees = self.numberEmployees(companyDemographicData) 
      #print(r.json(), file=sys.stderr)     
      
-     stats = {"numberOfEemployees":numberOfEmployees,
+     stats = {"numberOfEmployees": numberOfEmployees,
               "birthdayThisMonth": birthdaysThisMonth,
-              "positionData":positionData,
-              "companyDemographicData":companyDemographicData,              
+              "positionData": positionData,
+              "companyDemographicData": companyDemographicData,              
              }
      
      return Response(stats)
