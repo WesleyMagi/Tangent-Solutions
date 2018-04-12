@@ -339,7 +339,7 @@
                         console.log("DONE: ", race, position);
                         $('#pop-modal').removeClass('active');
                         initLogin();
-                        $('#test-auth-response').html("<span class='label label-success'>" + JSON.stringify(data,undefined,100));
+                        $('#test-auth-response').html("<span class='label label-success'>" + JSON.stringify(data,undefined,""));
                     }).fail(function(data) {
                         console.log("FAIL", data);
                         $('#modal-error').removeClass('d-invisible');
