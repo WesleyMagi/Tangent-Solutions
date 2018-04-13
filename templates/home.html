@@ -9,6 +9,7 @@
   <title>Tangent Solutions Home</title>
   <link rel="stylesheet" href='{% static "spectre.min.css" %}'>
   <link rel="stylesheet" href='{% static "spectre-icons.min.css" %}'>
+  <link rel="stylesheet" href='{% static "style.css" %}'>
   <link rel="icon" href="{% static 'favicon.ico' %}">
   <style>
   </style>
@@ -38,7 +39,8 @@
                 <button class="btn btn-primary"  id='testAuthButton'>Who am I?</button>
             </div>
             <div class='column col-9'>
-                <div id='test-auth-response' ></div>
+                 <pre><code id=test-auth-response></code></pre>
+    
             </div>
         </div>
         <div class="columns" id="employees">
@@ -46,7 +48,9 @@
                 <button class="btn btn-primary"  id='employees'>Employees</button>
             </div>
             <div class='column col-9'>
-                <div id='employees' ></div>
+                <div 
+                 <pre><code id=employees></code></pre>
+                </div>
             </div>
         </div>
         <div class="columns" id="test">
@@ -196,6 +200,28 @@
             }
             return cookieValue;
         };
+        
+        var jsonPrettyPrint = {
+         replacer: function(match, pIndent, pKey, pVal, pEnd) {
+            var key = '<span class=json-key>';
+            var val = '<span class=json-value>';
+            var str = '<span class=json-string>';
+            var r = pIndent || '';
+            if (pKey)
+               r = r + key + pKey.replace(/[": ]/g, '') + '</span>: ';
+            if (pVal)
+               r = r + (pVal[0] == '"' ? str : val) + pVal + '</span>';
+            return r + (pEnd || '');
+            },
+         toHtml: function(obj) {
+            var jsonLine = /^( *)("[\w]+": )?("[^"]*"|[\w.+-]*)?([,[{])?$/mg;
+            return JSON.stringify(obj, null, 3)
+               .replace(/&/g, '&amp;').replace(/\\"/g, '&quot;')
+               .replace(/</g, '&lt;').replace(/>/g, '&gt;')
+               .replace(jsonLine, jsonPrettyPrint.replacer);
+            }
+         };
+         
         var g_csrftoken = getCookie('csrftoken');
         var initLogin = function() {
             if(g_auth) {
@@ -237,7 +263,7 @@
                         }
                     }
                 }).done(function(data) {
-                    $('#test-auth-response').html("<span class='label label-success'>" + JSON.stringify(data,undefined,1000,''));
+                    $('#test-auth-response').html(jsonPrettyPrint.toHtml(data));
                 }).fail(function(data) {
                     $('#test-auth-response').html("<span class='label label-error'>We don't know who you are! Please log in first. Response: " + data.responseText + " (status: " + data.status+")</span>");
                 });
@@ -292,7 +318,7 @@
                         }
                     }
                 }).done(function(data) {
-                    $('#test-auth-response').html("<span class='label label-success'>" + JSON.stringify(data,undefined,''));
+                    $('#test-auth-response').html(jsonPrettyPrint.toHtml(data));
                 }).fail(function(data) {
                     $('#test-auth-response').html("<span class='label label-error'>We don't know who you are! Please log in first. Response: " + data.responseText + " (status: " + data.status+")</span>");
                 });
@@ -339,7 +365,7 @@
                         console.log("DONE: ", race, position);
                         $('#pop-modal').removeClass('active');
                         initLogin();
-                        $('#test-auth-response').html("<span class='label label-success'>" + JSON.stringify(data,undefined,""));
+                        $('#test-auth-response').html(jsonPrettyPrint.toHtml(data));
                     }).fail(function(data) {
                         console.log("FAIL", data);
                         $('#modal-error').removeClass('d-invisible');
@@ -360,7 +386,7 @@
                         }
                     }
                 }).done(function(data) {
-                    $('#test-auth-response').html("<span class='label label-success'>" + JSON.stringify(data,undefined," "));
+                    $('#test-auth-response').html(jsonPrettyPrint.toHtml(data));
                 }).fail(function(data) {
                     $('#test-auth-response').html("<span class='label label-error'>We don't know who you are! Please log in first.</span>");
                 });
