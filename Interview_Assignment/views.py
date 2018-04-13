@@ -106,13 +106,17 @@ class CompanyStatsView(APIView):
     def birthday(self, employeeData):
         birthdayNames = []
         currentMonth = datetime.now().month
-
+        birthdayDate = 0
+        
         for key in employeeData:
             birthMonth = int(key['birth_date'][5]) * 10 + int(
                 key['birth_date'][6])
+            birthdayDate = int(key['birth_date'][8]) * 10 + int(\
+                              key['birth_date'][9])
             if birthMonth == currentMonth:
                 birthdayNames.append(
-                    key['user']['first_name'] + ' ' + key['user']['last_name'])
+                    key['user']['first_name'] + ' ' + key['user']['last_name']\
+                    +' on the ' + str(birthdayDate))
 
         if not birthdayNames:
             birthdayNames.append(
