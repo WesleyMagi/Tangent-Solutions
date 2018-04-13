@@ -23,12 +23,7 @@ class LoginView(APIView):
 
         r = requests.post(url, payload)
         token = r.json()
-
-        #print("Hello World", file=sys.stderr)
-
-        #url = 'http://staging.tangent.tngnt.co/api/employee/me/'
-        #r = requests.get(url,  headers={'Authorization': 'Token {}'.format(token['token'])})
-
+        
         return Response(token)
 
 class WhoAmI(APIView):
@@ -37,7 +32,6 @@ class WhoAmI(APIView):
      url = 'http://staging.tangent.tngnt.co/api/employee/me/'
      r = requests.get(url,  headers={'Authorization': 'Token {}'.format(token)})
      
-     #print(r.json(), file=sys.stderr)
      
      return Response(r.json())
 
@@ -56,18 +50,12 @@ class EmployeeView(APIView):
      
      return Response(r.json())
  
-class FindAFriendView(APIView):
+class FindAUnicornView(APIView):
     def get(self, request, format=None):
      token = request.META.get('HTTP_AUTHORIZATION')
      string = request.META.get('QUERY_STRING')
      url = 'http://staging.tangent.tngnt.co/api/employee/?'+string
      r = requests.get(url,  headers={'Authorization': 'Token {}'.format(token)})
-     
-     #for key in request.data
-     
-     
-     
-     print(url, file=sys.stderr)
      
      return Response(r.json())
 
@@ -82,15 +70,15 @@ class CompanyStatsView(APIView):
      birthdaysThisMonth = self.birthday(employeeData)
      positionData = self.position(employeeData)
      companyDemographicData =  self.demographics(employeeData)
-     numberOfEmployees = self.numberEmployees(companyDemographicData) 
-     #print(r.json(), file=sys.stderr)     
+     numberOfEmployees = self.numberEmployees(companyDemographicData)   
      
-     stats = {"numberOfEmployees": numberOfEmployees,
-              "birthdayThisMonth": birthdaysThisMonth,
-              "positionData": positionData,
-              "companyDemographicData": companyDemographicData,              
+     stats = {"Number of Employees": numberOfEmployees,
+              "Birthdays this month": birthdaysThisMonth,
+              "Position Data": positionData,
+              "Company Demographic data": companyDemographicData,              
              }
-     
+           
+     print(stats, file=sys.stderr)
      return Response(stats)
 
 #data retrieval functions below
@@ -154,5 +142,6 @@ class CompanyStatsView(APIView):
      raceDict = {}
      for x in range (0, len(races)):
       raceDict[raceChars[x]] = races[x]
+
      return raceDict
  

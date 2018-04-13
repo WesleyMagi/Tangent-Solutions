@@ -171,7 +171,7 @@
             'login': '{% url "rest_login" %}',
             'who_am_i': '{% url "who_am_i" %}',
             'employee': '{% url "employee"%}',
-            'find_a_friend': '{% url "find_a_friend"%}',
+            'find_a_unicorn': '{% url "find_a_unicorn"%}',
             'company_stats': '{% url "company_stats"%}',
         };
         var g_auth = localStorage.getItem("auth");
@@ -265,7 +265,7 @@
                 }).done(function(data) {
                     $('#test-auth-response').html(jsonPrettyPrint.toHtml(data));
                 }).fail(function(data) {
-                    $('#test-auth-response').html("<span class='label label-error'>We don't know who you are! Please log in first. Response: " + data.responseText + " (status: " + data.status+")</span>");
+                    $('#test-auth-response').html(jsonPrettyPrint.toHtml(data));
                 });
             });
             $('#loginOkButton').click(function() {
@@ -320,7 +320,7 @@
                 }).done(function(data) {
                     $('#test-auth-response').html(jsonPrettyPrint.toHtml(data));
                 }).fail(function(data) {
-                    $('#test-auth-response').html("<span class='label label-error'>We don't know who you are! Please log in first. Response: " + data.responseText + " (status: " + data.status+")</span>");
+                    $('#test-auth-response').html(jsonPrettyPrint.toHtml(data));
                 });
             });
             
@@ -345,7 +345,7 @@
                 if(race || position || start_date_range || user || gender || birth_date_range || email) {
                     $('#modal-error').addClass('d-invisible');
                     $.ajax({
-                        url: rest_urls.find_a_friend,
+                        url: rest_urls.find_a_unicorn,
                         method: "GET",
                         data: {
                             race: race,
@@ -388,7 +388,7 @@
                 }).done(function(data) {
                     $('#test-auth-response').html(jsonPrettyPrint.toHtml(data));
                 }).fail(function(data) {
-                    $('#test-auth-response').html("<span class='label label-error'>We don't know who you are! Please log in first.</span>");
+                    $('#test-auth-response').html("We don't know who you are. Please log in.");
                 });
             });
         });
