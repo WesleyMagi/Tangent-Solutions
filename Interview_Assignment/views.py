@@ -27,8 +27,8 @@ class LoginView(APIView):
 
         r = requests.post(url, payload)
         token = r.json()
+        
         return Response(token)
-
 
 class WhoAmI(APIView):
     def get(self, request, format=None):
@@ -88,10 +88,10 @@ class CompanyStatsView(APIView):
         numberOfEmployees = self.numberEmployees(companyDemographicData)
 
         stats = {
-            "Number of Employees": numberOfEmployees,
-            "Birthdays this month": birthdaysThisMonth,
-            "Position Data": positionData,
-            "Company Demographic data": companyDemographicData,
+            'Number_of_Employees': numberOfEmployees,
+            'Birthdays_This_Month': birthdaysThisMonth,
+            'Position_Data': positionData,
+            'Company_Demographic_data': companyDemographicData,
         }
 
         print(stats, file=sys.stderr)

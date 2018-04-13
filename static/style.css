@@ -2,6 +2,10 @@ body {
 background-color: transparent;
 
 }
+
+span {
+    background-color: #ffffff;
+}
 .json-pretty {
     padding-left: 30px;
     padding-right: 30px;
@@ -23,3 +27,4 @@ background-color: transparent;
 .json-number {
     color: #99c794;
 }
+

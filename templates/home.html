@@ -7,9 +7,9 @@
   <meta http-equiv="x-ua-compatible" content="ie=edge">
   <meta name="author" content="https://github.com/WesleyMagi/Tangent-solutions">
   <title>Tangent Solutions Home</title>
+  <link rel="stylesheet" href='{% static "style.css" %}'>
   <link rel="stylesheet" href='{% static "spectre.min.css" %}'>
   <link rel="stylesheet" href='{% static "spectre-icons.min.css" %}'>
-  <link rel="stylesheet" href='{% static "style.css" %}'>
   <link rel="icon" href="{% static 'favicon.ico' %}">
   <style>
   </style>
@@ -39,18 +39,15 @@
                 <button class="btn btn-primary"  id='testAuthButton'>Who am I?</button>
             </div>
             <div class='column col-9'>
-                 <pre><code id=test-auth-response></code></pre>
-    
-            </div>
+            <pre><div id=test-auth-response></div></pre>
+            </div>            
         </div>
         <div class="columns" id="employees">
             <div class='column col-3'>
                 <button class="btn btn-primary"  id='employees'>Employees</button>
             </div>
             <div class='column col-9'>
-                <div 
-                 <pre><code id=employees></code></pre>
-                </div>
+                <div id=employees></div>
             </div>
         </div>
         <div class="columns" id="test">
@@ -58,7 +55,7 @@
                 <button class="btn btn-primary"  id='popup'>Find a Unicorn</button>
             </div>
             <div class='column col-9'>
-                <div id='popup' ></div>
+                <div id=popup></div>
             </div>
         </div>
         
@@ -68,7 +65,7 @@
                 <button class="btn btn-primary"  id='stats'>Company Stats</button>
             </div>
             <div class='column col-9'>
-                <div id='stats' ></div>
+                <div  id=stats></div>
             </div>
         </div>
         
@@ -114,15 +111,12 @@
                             <input class="form-input" type="text" id="email" placeholder="Email">
                         </div>                        
                     </form>
-                    <div class='label label-error mt-1 d-invisible' id='modal-error'>
-                        Unable to login!
-                    </div>
                 </div>
             </div>
             <div class="modal-footer">
 
                 <button class="btn btn-primary" id='popok' >Ok</button>
-                <a href="#close" class="btn close-modal" >Close</a>
+                <a href="#close" class="btn close-modal-pop" >Close</a>
             </div>
         </div>
     </div>
@@ -226,8 +220,7 @@
         var initLogin = function() {
             if(g_auth) {
                 $('#non-logged-in').hide();
-                $('#logged-in').show();
-                $('#span-username').html(g_auth.username);
+                $('#logged-in').show();                
                 if(g_auth.remember_me) {
                     localStorage.setItem("auth", JSON.stringify(g_auth));
                 } else {
@@ -249,6 +242,9 @@
             });
             $('.close-modal').click(function() {
                 $('#login-modal').removeClass('active');
+                $('#non-logged-in').show();
+                $('#logged-in').hide();
+                $('#span-username').html('');
             });
             
             
@@ -273,7 +269,6 @@
                 var password = $('#input-password').val();
                 var remember_me = $('#input-local-storage').prop('checked');
                 if(username && password) {
-                    console.log("Attempting to login with ", username, password);
                     $('#modal-error').addClass('d-invisible');
                     $.ajax({
                         url: rest_urls.login,
@@ -289,9 +284,20 @@
                             key: data.token,
                             remember_me: remember_me
                         };
-                        $('#login-modal').removeClass('active');
+                        if(g_auth.key){
+                         $('#login-modal').removeClass('active');
+                         $('#non-logged-in').hide();
+                         $('#logged-in').show();
+                         $('#span-username').html(g_auth.username);
+                        }
+                        else{
+                         $('#modal-error').removeClass('d-invisible');
+                         $('#non-logged-in').show();
+                         $('#logged-in').hide();
+                         $('#span-username').html('');
+                        };
                         initLogin();
-                        // CAREFUL! csrf token is rotated after login: https://docs.djangoproject.com/en/1.7/releases/1.5.2/#bugfixes
+                        // CAREFUL! csrf token is rotated after login
                         g_csrftoken = getCookie('csrftoken');
                     }).fail(function(data) {
                         console.log("FAIL", data);
@@ -329,9 +335,10 @@
             $('#popup').click(function() {
                 $('#pop-modal').addClass('active');
             });
-            $('.close-modal').click(function() {
+            $('.close-modal-pop').click(function() {
                 $('#pop-modal').removeClass('active');
             });
+            
             
             $('#popok').click(function() {
                 var race = $('#race').val();
