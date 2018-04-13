@@ -341,11 +341,11 @@
             
             
             $('#popok').click(function() {
-                var race = $('#race').val();
+                var race = $('#race').val().toUpperCase();
                 var position = $('#position').val();
                 var start_date_range = $('#start_date_range').val();
                 var user = $('#user').val();
-                var gender = $('#gender').val();
+                var gender = $('#gender').val().toUpperCase();
                 var birth_date_range = $('#birth_date_range').val();
                 var email  = $('#email').val();
                 //var remember_me = $('#input-local-storage').prop('checked');
